@@ -1,0 +1,50 @@
+# TEMPLATE. Copy it and edit the copy:
+#
+#   cp wrangler.template.toml wrangler.toml
+#
+# `wrangler.toml` is gitignored because it holds YOUR D1 database id. Committing
+# a real one publishes your Cloudflare resource graph to everyone who clones this
+# repo, and forking it points their deploys at your database.
+#
+# For local-only work, put secrets in .dev.vars (see .dev.vars.example) instead of
+# [vars] here.
+
+name = "lighthouse"
+main = "src/index.ts"
+compatibility_date = "2026-06-30"
+
+workers_dev = true
+preview_urls = false
+
+# To serve it on your own domain (one already on this Cloudflare account),
+# uncomment this and set workers_dev = false, so the domain is the only way in.
+# The deploy creates the address and its certificate.
+# routes = [{ pattern = "lighthouse.example.com", custom_domain = true }]
+
+# Create your own database, then paste the id `wrangler d1 create` prints:
+#   npx wrangler d1 create lighthouse-watchlist
+[[d1_databases]]
+binding = "DB"
+database_name = "lighthouse-watchlist"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+
+[vars]
+# Country code for watch-provider lookups (IN, US, GB, ...).
+DEFAULT_REGION = "IN"
+# Any model id your OpenRouter account can reach. Free tiers work.
+OPENROUTER_MODEL = "nvidia/nemotron-3-ultra-550b-a55b:free"
+
+[observability]
+enabled = false
+head_sampling_rate = 1
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+persist = true
+invocation_logs = true
+
+[observability.traces]
+enabled = false
+persist = true
+head_sampling_rate = 1

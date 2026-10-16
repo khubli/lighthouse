@@ -1,0 +1,77 @@
+# Local settings for `npm run dev`. Copy to .dev.vars (never committed) and fill in.
+#   cp .dev.vars.example .dev.vars
+#
+# On the deployed Worker, secrets are set with `npx wrangler secret put NAME`
+# instead, and plain settings go in wrangler.toml [vars]. docs/configuration.md
+# describes every one.
+
+# --- Required ---
+
+# Signs the session cookie. Any long random string:
+#   node -e "console.log(crypto.randomUUID() + crypto.randomUUID())"
+# Without it, sign-in is switched off (503) rather than signing with a public key.
+SESSION_SECRET=""
+
+# --- Optional: an AI key (bring your own; set one) ---
+#
+# Turns messy text into a title and a type. Without any, built-in rules do it,
+# so nothing breaks. If several are set, AI_PROVIDER picks one.
+
+# Claude. https://console.anthropic.com/settings/keys
+ANTHROPIC_API_KEY=""
+# Any Claude model; claude-opus-5-5 when empty.
+ANTHROPIC_MODEL=""
+
+# Any OpenRouter model, free ones included. https://openrouter.ai/keys
+OPENROUTER_API_KEY=""
+
+# OpenAI, or any OpenAI-compatible API (Groq, Together, Ollama...). A local
+# server needs only OPENAI_BASE_URL, e.g. http://localhost:11434/v1.
+OPENAI_API_KEY=""
+OPENAI_BASE_URL=""
+OPENAI_MODEL=""
+
+# anthropic, openrouter, openai, or none. Empty: the first key set, in that order.
+AI_PROVIDER=""
+
+# --- Optional: better details ---
+
+# https://www.themoviedb.org/settings/api - films and series: posters, ratings,
+# where to watch.
+TMDB_API_KEY=""
+
+# Google Books and the YouTube Data API (enable both on one Google Cloud key).
+# Without it, books come from Open Library and videos from YouTube oEmbed.
+GOOGLE_BOOKS_API_KEY=""
+
+# --- Optional: Cloudflare Access (recommended for a private app) ---
+
+# With both set, nobody is asked for a PIN: Cloudflare Access signs each person
+# in, and the email it verified opens that person's list. Link each email with
+# `npm run users -- link <name> <email>`, or each person connects once in the
+# app with their list's name and PIN. Both values are on the Access application
+# (docs/setup.md, step 8).
+# On the deployed Worker set them as secrets, so a deploy never clears them:
+#   npx wrangler secret put TEAM_DOMAIN     # e.g. https://yourteam.cloudflareaccess.com
+#   npx wrangler secret put POLICY_AUD
+# Leave them empty locally to use PIN sign-in.
+TEAM_DOMAIN=""
+POLICY_AUD=""
+
+# --- Optional: accounts ---
+
+# Comma-separated names allowed to create accounts with POST /admin/users.
+# Empty means any signed-in account can, which is fine for one person.
+ADMIN_USER_NAMES=""
+
+# Only if you upgraded from before 0.2 AND changed SESSION_SECRET since: the old
+# value, so PINs set back then can be checked once and rehashed.
+LEGACY_PIN_SECRET=""
+
+# --- Settings (also in wrangler.toml [vars]) ---
+
+# Country code for "Where to watch", e.g. IN, US, GB.
+DEFAULT_REGION="IN"
+
+# Any model your OpenRouter account can use. Free ones work.
+OPENROUTER_MODEL="nvidia/nemotron-3-ultra-550b-a55b:free"

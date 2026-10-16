@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Lighthouse mark: a lighthouse whose beam is three list lines. Master for every icon; see docs/brand. -->
+  <defs>
+    <linearGradient id="t" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FDE68A"/><stop offset="1" stop-color="#F59E0B"/></linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#131722"/>
+  <g transform="translate(-14 4)">
+    <g stroke="#FBBF24" stroke-width="26" stroke-linecap="round">
+      <line x1="272" y1="146" x2="410" y2="146"/>
+      <line x1="272" y1="194" x2="370" y2="194"/>
+      <line x1="272" y1="242" x2="392" y2="242"/>
+    </g>
+    <path d="M200 106 L250 156 H150 Z" fill="url(#t)"/>
+    <rect x="164" y="160" width="72" height="68" rx="10" fill="#FEF3C7"/>
+    <rect x="150" y="228" width="100" height="18" rx="6" fill="#F59E0B"/>
+    <path d="M168 246 H232 L254 424 H146 Z" fill="url(#t)"/>
+    <path d="M159 318 H241 L245 352 H155 Z" fill="#131722"/>
+    <rect x="118" y="420" width="164" height="26" rx="13" fill="#F59E0B"/>
+  </g>
+</svg>

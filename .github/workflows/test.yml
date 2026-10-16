@@ -1,0 +1,34 @@
+# Typecheck, the test suite and the docs check on every change. No secrets and
+# no network: the Worker runs in Miniflare against an in-memory database, and
+# every outside service is answered by a stub.
+
+name: Tests
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: worker
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: worker/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npm run typecheck
+      - run: npm test
+      - run: node scripts/verify-docs.mjs
+      # The demo is built from the real page, so a page that can't render
+      # fails here rather than after it is published.
+      - run: node scripts/build-demo.mjs ../_site

@@ -1,0 +1,47 @@
+# Your Lighthouse settings. The Deploy workflow (.github/workflows/deploy.yml)
+# deploys Lighthouse with this file as it is.
+#
+# Keep this repository private: the database id is specific to your account.
+# Secrets (SESSION_SECRET, your AI key, TEAM_DOMAIN, POLICY_AUD...) are never
+# put here; set them once with `npx wrangler secret put NAME`, or in the
+# Cloudflare dashboard (your Worker > Settings > Variables and Secrets).
+
+name = "lighthouse"
+main = "src/index.ts"
+compatibility_date = "2026-06-30"
+
+workers_dev = true
+preview_urls = false
+
+# To serve it on your own domain (one already on this Cloudflare account),
+# uncomment this and set workers_dev = false, so the domain is the only way in.
+# The deploy creates the address and its certificate.
+# routes = [{ pattern = "lighthouse.example.com", custom_domain = true }]
+
+# Create your database once (Cloudflare dashboard > Storage & Databases > D1 >
+# Create, named lighthouse-watchlist), then paste its id here:
+[[d1_databases]]
+binding = "DB"
+database_name = "lighthouse-watchlist"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+
+[vars]
+# Country code for watch-provider lookups (IN, US, GB, ...).
+DEFAULT_REGION = "IN"
+# Any model id your OpenRouter account can reach. Free tiers work.
+OPENROUTER_MODEL = "nvidia/nemotron-3-ultra-550b-a55b:free"
+
+[observability]
+enabled = false
+head_sampling_rate = 1
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+persist = true
+invocation_logs = true
+
+[observability.traces]
+enabled = false
+persist = true
+head_sampling_rate = 1

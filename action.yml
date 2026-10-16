@@ -1,0 +1,99 @@
+# Deploys Lighthouse to your own Cloudflare account from a GitHub workflow,
+# with the wrangler.toml kept in your private repository. The public repository
+# is the recipe; your private one only holds your settings and never writes back.
+# A ready-to-copy private repository: examples/instance/.
+
+name: Deploy Lighthouse
+description: Deploy Lighthouse to your own Cloudflare account, with the settings from your private repository.
+author: khubli
+branding:
+  icon: bookmark
+  color: yellow
+
+inputs:
+  cloudflare-api-token:
+    description: A Cloudflare API token with the "Edit Cloudflare Workers" template plus Account > D1 > Edit
+    required: true
+  cloudflare-account-id:
+    description: Your Cloudflare account id (Workers & Pages > Overview, on the right)
+    required: true
+  config:
+    description: Your wrangler.toml, relative to the root of your repository
+    default: wrangler.toml
+  migrate:
+    description: Apply new database migrations before deploying ("true" or "false")
+    default: "true"
+  check-url:
+    description: Your Lighthouse's address. After deploying, the action checks that a stranger there is asked to sign in.
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v5
+      with:
+        node-version: '22'
+
+    - name: Install Lighthouse
+      shell: bash
+      working-directory: ${{ github.action_path }}/worker
+      run: npm ci --no-audit --no-fund
+
+    - name: Use your settings
+      shell: bash
+      env:
+        CONFIG: ${{ github.workspace }}/${{ inputs.config }}
+        TARGET: ${{ github.action_path }}/worker/wrangler.toml
+      run: |
+        if [ ! -f "$CONFIG" ]; then
+          echo "::error::There is no ${{ inputs.config }} in your repository. Copy worker/wrangler.template.toml there and fill it in."
+          exit 1
+        fi
+        cp "$CONFIG" "$TARGET"
+
+    - name: Apply new database migrations
+      if: inputs.migrate == 'true'
+      shell: bash
+      working-directory: ${{ github.action_path }}/worker
+      env:
+        CLOUDFLARE_API_TOKEN: ${{ inputs.cloudflare-api-token }}
+        CLOUDFLARE_ACCOUNT_ID: ${{ inputs.cloudflare-account-id }}
+      # DB is the binding name in wrangler.toml, whatever the database is called.
+      run: npx wrangler d1 migrations apply DB --remote
+
+    - name: Deploy
+      shell: bash
+      working-directory: ${{ github.action_path }}/worker
+      env:
+        CLOUDFLARE_API_TOKEN: ${{ inputs.cloudflare-api-token }}
+        CLOUDFLARE_ACCOUNT_ID: ${{ inputs.cloudflare-account-id }}
+      run: npx wrangler deploy
+
+    # Opens the app as a stranger would. Your list is never served without
+    # sign-in either way; this says which sign-in a stranger meets, and fails
+    # the run if one ever got the app.
+    - name: Check that a stranger is asked to sign in
+      if: inputs.check-url != ''
+      shell: bash
+      env:
+        URL: ${{ inputs.check-url }}
+      run: |
+        target="${URL%/}/dashboard"
+        for attempt in $(seq 1 12); do
+          read -r code location < <(curl -s -o /dev/null --max-time 15 -w '%{http_code} %{redirect_url}\n' "$target" || echo "000 -")
+          case "$code" in
+            301|302|303|307|308)
+              if [[ "$location" == *".cloudflareaccess.com/"* ]]; then
+                echo "Checked: Cloudflare Access asks a stranger to sign in at $URL."; exit 0
+              elif [[ "$location" == *"/login"* ]]; then
+                echo "::warning::$URL asks a stranger for a name and PIN. Cloudflare Access is not in front of it (docs/setup.md, step 8)."; exit 0
+              fi ;;
+            401|403)
+              echo "Checked: $URL refuses a stranger."; exit 0 ;;
+            200)
+              echo "::error::$URL answered a stranger with the app, without sign-in. Check your Cloudflare Access application and redeploy."; exit 1 ;;
+          esac
+          # A new custom domain can take a few minutes to answer.
+          sleep 10
+        done
+        echo "::warning::$URL did not give a clear answer within two minutes (last: $code). Open it in a private window to check."

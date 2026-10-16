@@ -1,0 +1,144 @@
+<!doctype html>
+<!--
+  Source of docs/images/how-it-works-{light,dark}.png, the overview in the README.
+  Re-render after changing names or stages (needs Playwright):
+    node docs/images/render.mjs
+  Stage names here must match docs/how-it-works.md.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>How Lighthouse works</title>
+<style>
+  :root {
+    --bg: #F5F3EE; --surface: #FFFFFF; --surface-2: #EFECE5; --line: #D9D4C9;
+    --ink: #191B22; --muted: #535866; --accent: #F59E0B; --accent-ink: #8A4B06; --mark-bg: #131722;
+    --t-movie: #2563eb; --t-series: #7c3aed; --t-book: #047857; --t-podcast: #b45309;
+    --t-youtube: #dc2626; --t-song: #db2777; --t-post: #0284c7;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0D1017; --surface: #151923; --surface-2: #1B2030; --line: #2A3142;
+      --ink: #ECEEF4; --muted: #A4AABB; --accent: #FBBF24; --accent-ink: #FCD34D;
+      --t-movie: #60a5fa; --t-series: #a78bfa; --t-book: #34d399; --t-podcast: #fbbf24;
+      --t-youtube: #f87171; --t-song: #f472b6; --t-post: #38bdf8;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    width: 1400px; padding: 44px 48px 48px; background: var(--bg); color: var(--ink);
+    font: 400 17px/1.4 -apple-system, "Segoe UI", Roboto, Inter, "Helvetica Neue", Arial, sans-serif;
+  }
+  .head { display: flex; align-items: center; gap: 14px; margin-bottom: 30px; }
+  .head img { width: 44px; height: 44px; border-radius: 11px; background: var(--mark-bg); padding: 5px; }
+  .head h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.4px; }
+  .head p { color: var(--muted); font-size: 17px; margin-left: 6px; }
+
+  .row { display: grid; grid-template-columns: 210px 34px 1fr 34px 220px; align-items: stretch; }
+  .arrow { display: flex; align-items: center; justify-content: center; color: var(--muted); }
+  .arrow svg { width: 26px; height: 26px; }
+
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px 18px 16px; }
+  .label { font-size: 12.5px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+  .card h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; letter-spacing: -0.2px; }
+  .card p { color: var(--muted); font-size: 15px; }
+
+  .side { display: flex; flex-direction: column; justify-content: center; gap: 12px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px 10px; margin-top: 8px; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; font-size: 14.5px; color: var(--ink); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
+
+  .account { border: 2px solid var(--accent); border-radius: 22px; padding: 16px 18px 18px; position: relative; }
+  .account > .label { color: var(--accent-ink); }
+  .access { display: flex; align-items: center; gap: 10px; font-size: 15px; color: var(--muted);
+    background: var(--surface-2); border-radius: 10px; padding: 9px 12px; margin-bottom: 14px; }
+  .access b { color: var(--ink); font-weight: 600; }
+  .stages { display: grid; grid-template-columns: 1fr 22px 1fr 22px 1fr 22px 1fr; align-items: stretch; }
+  .stage .n { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--accent); color: #191B22; font-weight: 800; font-size: 14px; margin-bottom: 10px; }
+  .stages .arrow svg { width: 18px; height: 18px; }
+  .db { margin-top: 14px; display: flex; align-items: center; gap: 14px; }
+  .db .cyl { width: 34px; height: 40px; flex: none; color: var(--accent); }
+  .db h3 { margin: 0; }
+
+  .below { display: grid; grid-template-columns: 210px 34px 1fr 34px 220px; margin-top: 0; }
+  .feeds { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .feed { position: relative; margin-top: 28px; border-style: dashed; }
+  .feed::before { content: ""; position: absolute; top: -30px; left: var(--x); height: 28px; border-left: 2px dashed var(--line); }
+  .feed h3 { font-size: 16.5px; }
+</style>
+</head>
+<body>
+  <div class="head">
+    <img src="../../worker/src/assets/icon.svg" alt="">
+    <h1>How Lighthouse works</h1>
+    <p>Everything on your own Cloudflare account, with your own keys.</p>
+  </div>
+
+  <div class="row">
+    <div class="side">
+      <div class="card">
+        <div class="label">Your phone</div>
+        <h3>Share from any app</h3>
+        <p>YouTube, X, Reddit, a browser, a podcast app. Or paste a link or a title.</p>
+      </div>
+    </div>
+    <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></div>
+
+    <div class="account">
+      <div class="label">Your Cloudflare account</div>
+      <div class="access">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+        <span><b>Cloudflare Access</b> signs each person in with an emailed code; their email opens their own list.</span>
+      </div>
+      <div class="stages">
+        <div class="card stage"><span class="n">1</span><h3>Keep it</h3><p>Stored exactly as shared, before anything else.</p></div>
+        <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></div>
+        <div class="card stage"><span class="n">2</span><h3>Read the link</h3><p>An X post, a Reddit post, or any page.</p></div>
+        <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></div>
+        <div class="card stage"><span class="n">3</span><h3>Classify</h3><p>Title and type, by your AI key or built-in rules.</p></div>
+        <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></div>
+        <div class="card stage"><span class="n">4</span><h3>Enrich</h3><p>Poster, where to watch, length, author.</p></div>
+      </div>
+      <div class="card db">
+        <svg class="cyl" viewBox="0 0 34 40" fill="none" stroke="currentColor" stroke-width="2.4"><ellipse cx="17" cy="7" rx="14" ry="5"/><path d="M3 7v26c0 2.8 6.3 5 14 5s14-2.2 14-5V7"/><path d="M3 20c0 2.8 6.3 5 14 5s14-2.2 14-5"/></svg>
+        <div><h3>Your list, in your D1 database</h3><p>One item per film, book or post, for each person. Nothing is sent anywhere else.</p></div>
+      </div>
+    </div>
+
+    <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></div>
+    <div class="side">
+      <div class="card">
+        <div class="label">Back on your phone</div>
+        <h3>One list, five statuses</h3>
+        <div class="chips">
+          <span class="chip" style="--c: var(--t-movie)"><span class="dot"></span>Films</span>
+          <span class="chip" style="--c: var(--t-series)"><span class="dot"></span>Series</span>
+          <span class="chip" style="--c: var(--t-book)"><span class="dot"></span>Books</span>
+          <span class="chip" style="--c: var(--t-podcast)"><span class="dot"></span>Podcasts</span>
+          <span class="chip" style="--c: var(--t-youtube)"><span class="dot"></span>Videos</span>
+          <span class="chip" style="--c: var(--t-post)"><span class="dot"></span>X and Reddit posts</span>
+        </div>
+        <p style="margin-top: 12px">Surprise me, or Something short, for tonight.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="below">
+    <div></div><div></div>
+    <div class="feeds">
+      <div class="card feed" style="--x: 60%">
+        <div class="label">Public sources</div>
+        <h3>FxTwitter · Reddit · TMDB · Google Books · Open Library · gpodder · YouTube</h3>
+        <p>Read once, when you save, from your Worker.</p>
+      </div>
+      <div class="card feed" style="--x: 30%">
+        <div class="label">Your AI key, optional</div>
+        <h3>Claude · OpenRouter · any OpenAI-compatible API</h3>
+        <p>Or none: built-in rules do the sorting. Your choice of type always wins.</p>
+      </div>
+    </div>
+    <div></div><div></div>
+  </div>
+</body>
+</html>

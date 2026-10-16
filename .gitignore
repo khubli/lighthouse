@@ -1,0 +1,37 @@
+.env*
+!.env.example
+.dev.vars
+.venv/
+__pycache__/
+*.py[cod]
+data/
+.pytest_cache/
+*.egg-info/
+node_modules/
+.wrangler/
+
+# Per-developer wrangler config: holds a real D1 database id and local overrides.
+# The committed template is worker/wrangler.template.toml.
+worker/wrangler.toml
+
+# Throwaway debug/verification scripts (scratch CDP harnesses, one-off patches).
+# These get created next to src/ and must never be committed or deployed.
+_*.ts
+_t.ts
+_preview.ts
+_measure.ts
+_diag.ts
+
+# OS noise
+.DS_Store
+Thumbs.db
+
+# Scratch dirs from other agent tooling (screenshots/attachments, not source).
+.codex-remote-attachments/
+.agents/
+
+# Stale editor backups.
+*.bak
+
+# Static demo build (npm run demo); published by .github/workflows/demo.yml, never committed.
+_site/

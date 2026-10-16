@@ -1,0 +1,28 @@
+# Deploys Lighthouse to your Cloudflare account with the settings in this
+# repository: by hand (Actions > Deploy > Run workflow), and whenever
+# wrangler.toml changes on main.
+
+name: Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [wrangler.toml]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: khubli/lighthouse@v1
+        with:
+          cloudflare-api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          cloudflare-account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # Your Lighthouse's address (Settings > Secrets and variables >
+          # Actions > Variables). The run checks a stranger is asked to sign in.
+          check-url: ${{ vars.LIGHTHOUSE_URL }}

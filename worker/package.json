@@ -1,0 +1,46 @@
+{
+  "name": "lighthouse-watchlist",
+  "version": "1.0.0",
+  "description": "One list for everything you mean to watch, read or listen to, and the X and Reddit posts that told you to. Cloudflare Workers + D1, your own AI key or none.",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/khubli/lighthouse.git"
+  },
+  "engines": {
+    "node": ">=22.18"
+  },
+  "keywords": [
+    "cloudflare-workers",
+    "d1",
+    "pwa",
+    "watchlist",
+    "self-hosted",
+    "web-share-target"
+  ],
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test \"test/*.test.mjs\"",
+    "verify": "npm run typecheck && npm test && node scripts/verify-docs.mjs",
+    "demo": "node scripts/build-demo.mjs",
+    "users": "node scripts/users.mjs",
+    "db:create": "wrangler d1 create lighthouse-watchlist",
+    "db:migrate:local": "wrangler d1 migrations apply lighthouse-watchlist --local",
+    "db:migrate:remote": "wrangler d1 migrations apply lighthouse-watchlist --remote",
+    "db:query": "wrangler d1 execute lighthouse-watchlist --remote --command",
+    "tail": "wrangler tail"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260620.0",
+    "esbuild": "0.28.1",
+    "miniflare": "4.20260625.0",
+    "typescript": "^5.5.0",
+    "wrangler": "^4.105.0"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.135.0"
+  }
+}
